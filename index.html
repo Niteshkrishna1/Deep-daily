@@ -1,0 +1,106 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#ffffff">
+  <title>Offline Diary App</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f4f4f4; }
+    header, footer { background: #333; color: #fff; padding: 1em; text-align: center; }
+    main { padding: 1em; max-width: 600px; margin: auto; }
+    textarea { width: 100%; height: 200px; padding: 1em; font-size: 1em; }
+    .toolbar { margin: 1em 0; }
+    .toolbar button { margin-right: 0.5em; }
+    .habits { margin: 1em 0; }
+    .habits label { display: block; margin: 0.25em 0; }
+    .photo-upload { margin-top: 1em; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>My Personal Diary</h1>
+    <p>Offline & Secure</p>
+  </header>  <main>
+    <section>
+      <input type="date" id="entryDate" />
+      <div class="toolbar">
+        <button onclick="formatBold()">Bold</button>
+        <input type="file" id="photoInput" accept="image/*" multiple />
+      </div>
+      <div contenteditable="true" id="diaryEntry" style="border:1px solid #ccc; padding:1em; background:white;"></div>
+      <div class="habits">
+        <h3>Daily Habits</h3>
+        <div id="habitList"></div>
+      </div>
+    </section>
+  </main>  <footer>
+    <p><strong>Developed by:</strong> Nitesh Krishna</p>
+    <p><strong>Email:</strong> nk53ai@gmail.com | <strong>Phone:</strong> +91 88580 16044</p>
+    <p><strong>YouTube:</strong> Nitesh Deep Search 🔍</p>
+    <p><strong>Version:</strong> v1.0 – June 2025</p>
+    <p><strong>Privacy Note:</strong> No personal data is sold or shared. All user content remains private and secure.</p>
+  </footer>  <script>
+    const entry = document.getElementById('diaryEntry');
+    const dateInput = document.getElementById('entryDate');
+    const photoInput = document.getElementById('photoInput');
+    const habitList = document.getElementById('habitList');
+
+    const defaultHabits = [
+      'Wake up early', 'Exercise', 'Meditation', 'Read a book',
+      'Healthy breakfast', 'Drink water', 'No junk food', 'Work on goals',
+      'Learn something new', 'Write journal', 'Avoid social media', 'Practice gratitude',
+      'Help someone', 'Smile', 'Plan tomorrow', 'Sleep on time',
+      'Do deep work', 'Connect with family', 'Limit screen time', 'Reflect on the day'
+    ];
+
+    function loadHabits() {
+      habitList.innerHTML = '';
+      defaultHabits.forEach((habit, index) => {
+        const id = `habit_${index}`;
+        habitList.innerHTML += `<label><input type='checkbox' id='${id}' /> ${habit}</label>`;
+      });
+    }
+
+    function saveEntry() {
+      const key = 'diary_' + dateInput.value;
+      const data = {
+        content: entry.innerHTML,
+        habits: defaultHabits.map((_, i) => document.getElementById(`habit_${i}`).checked),
+        timestamp: Date.now()
+      };
+      localStorage.setItem(key, JSON.stringify(data));
+    }
+
+    function loadEntry() {
+      const key = 'diary_' + dateInput.value;
+      const data = JSON.parse(localStorage.getItem(key));
+      if (data) {
+        entry.innerHTML = data.content;
+        data.habits.forEach((checked, i) => {
+          const checkbox = document.getElementById(`habit_${i}`);
+          if (checkbox) checkbox.checked = checked;
+        });
+      } else {
+        entry.innerHTML = '';
+      }
+    }
+
+    function formatBold() {
+      document.execCommand('bold');
+    }
+
+    setInterval(saveEntry, 10000);
+
+    dateInput.addEventListener('change', () => {
+      loadHabits();
+      loadEntry();
+    });
+
+    window.onload = () => {
+      const today = new Date().toISOString().split('T')[0];
+      dateInput.value = today;
+      loadHabits();
+      loadEntry();
+    };
+  </script></body>
+</html>
